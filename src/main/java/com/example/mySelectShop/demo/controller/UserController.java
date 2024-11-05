@@ -5,7 +5,10 @@ import com.example.mySelectShop.demo.dto.UserInfoDto;
 import com.example.mySelectShop.demo.entity.UserRoleEnum;
 import com.example.mySelectShop.demo.security.UserDetailsImpl;
 import com.example.mySelectShop.demo.service.FolderService;
+import com.example.mySelectShop.demo.service.KakaoService;
 import com.example.mySelectShop.demo.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ public class UserController {
 
     private final UserService userService;
     private final FolderService folderService;
+    private final KakaoService kakaoService;
 
     @GetMapping("/user/login-page")
     public String loginPage() {
@@ -68,5 +72,11 @@ public class UserController {
     public String getUserInfo(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         model.addAttribute("folders", folderService.getFolders(userDetails.getUser()));
         return "index :: #fragment";
+    }
+
+    @GetMapping("/user/kakao/callback")
+    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        String token = kakaoService.kakaoLogin(code);
+        return token;
     }
 }
